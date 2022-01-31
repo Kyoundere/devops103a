@@ -16,4 +16,4 @@ Monolith (One box that has the front end, back end, database) (Everytime you add
 
 2 tier (breaking it down into smaller things with AWS)
 
-Microservices (Separating it into even smaller things for improved uptime, and easier updating)
+Microservices (Separating it into even smaller things for improved uptime, and easier updating
