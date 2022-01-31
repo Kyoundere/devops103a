@@ -39,3 +39,9 @@ To delete the VM: `vagrant destroy`<br>
 To shut the vagrant VM down: `vagrant halt`<br>
 To reboot the vagrant VM: `vagrant reload`<br>
 To access the VM shell: `vagrant ssh`<br>
+<br>
+
+# Setting up Ubuntu
+sudo apt-get update
+sudo apt-get upgrade -y
+sudo apt-get install nginx -y 
