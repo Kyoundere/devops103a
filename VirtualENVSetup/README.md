@@ -42,6 +42,19 @@ To access the VM shell: `vagrant ssh`<br>
 <br>
 
 # Setting up Ubuntu
-sudo apt-get update
-sudo apt-get upgrade -y
-sudo apt-get install nginx -y 
+How to use the apt-get package manager:<br>
+`sudo apt-get install/update/upgrade/remove package`<br>
+E.g.: `sudo apt-get install nginx`<br>
+<br>
+
+The following 3 commands are automatically completed by Vagrantfile, but they're useful to know anyway:<br>
+`sudo apt-get update`<br>
+`sudo apt-get upgrade -y`<br>
+`sudo apt-get install nginx -y`<br>
+<br>
+
+Useful commands to interact with the network:<br>
+`systemctl status/restart/start/stop object`<br>
+`systemctl status nginx`<br>
+
+
