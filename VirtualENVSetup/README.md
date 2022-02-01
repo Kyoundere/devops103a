@@ -39,12 +39,13 @@ To delete the VM: `vagrant destroy`<br>
 To shut the vagrant VM down: `vagrant halt`<br>
 To reboot the vagrant VM: `vagrant reload`<br>
 To access the VM shell: `vagrant ssh`<br>
-<br>
+To access a remote VM shell: `vagrant ssh xxx.xxx.xxx.xxx`, where xxx.xxx.xxx.xxx is an IP address.
+<br><br>
 
 # Setting up Ubuntu
 How to use the apt-get package manager:<br>
-`sudo apt-get install/update/upgrade/remove package`<br>
-E.g.: `sudo apt-get install nginx`<br>
+`sudo apt-get install/update/upgrade/remove package -y`<br>
+E.g.: `sudo apt-get install nginx -y`<br>
 <br>
 
 The following 3 commands are automatically completed by Vagrantfile, but they're useful to know anyway:<br>
@@ -53,7 +54,7 @@ The following 3 commands are automatically completed by Vagrantfile, but they're
 `sudo apt-get install nginx -y`<br>
 <br>
 
-Useful commands to interact with the network:<br>
+Useful commands to interact with the system:<br>
 `systemctl status/restart/start/stop object`<br>
 `systemctl status nginx`<br>
 
