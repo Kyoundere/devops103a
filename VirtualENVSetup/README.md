@@ -73,3 +73,7 @@ To move a file: `mv source-file-name target-location-name`<br>
 To list current processes: `top`<br>
 To check file permissions: `ll`<br>
 To change file permissions: `chmod permission name-of-file`<br>
+
+
+
+sudo apt-get install ruby
