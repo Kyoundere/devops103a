@@ -56,6 +56,20 @@ The following 3 commands are automatically completed by Vagrantfile, but they're
 
 Useful commands to interact with the system:<br>
 `systemctl status/restart/start/stop object`<br>
-`systemctl status nginx`<br>
+`systemctl status nginx`<br><br>
 
 
+# Linux Basics
+To find out system information (such as distro, date, etc): `uname -a`<br>
+To name the current directory we're in: `pwd`<br>
+To list files in the current directory: `ls -a`<br>
+To create a directory: `mkdir name-of-directory`<br>
+Navigate to a different directory: `cd directory`, where `..` is previous directory, e.g. `cd ..`<br>
+To create a file: `touch name-of-file`<br>
+To display the contents of a file: `cat name-of-file`<br>
+To delete a file: `rm -rf name-of-file-or-directory`<br>
+To copy a file: `cp target-file-name location`<br>
+To move a file: `mv source-file-name target-location-name`<br>
+To list current processes: `top`<br>
+To check file permissions: `ll`<br>
+To change file permissions: `chmod permission name-of-file`<br>
