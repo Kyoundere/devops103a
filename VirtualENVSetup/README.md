@@ -75,5 +75,27 @@ To check file permissions: `ll`<br>
 To change file permissions: `chmod permission name-of-file`<br>
 
 
+# Setting up the Virtual Environment
+On the localhost, cd into Vagrant/environment/spec-tests and perform these two commands:<br>
+`gem install bundler`<br>
+`bundle`<br>
+Which will install a few pre-requisites on the localhost.<br><br>
 
-sudo apt-get install ruby
+The command 'rake spec' while in the spec-tests/ directory will perform a series of checks to see if you have the pre-requisites required to successfully launch the application. If there are any missing after this guide, they will need to be installed for the app to work.<br><br>
+
+I've automated all of the installations required inside the Unbuntu VM and put them into the `provisions.sh` shell file, which is coded to automatically launch whenever `vagrant up` is called. These include:<br><br>
+- `sudo apt-get update -y`
+- `sudo apt-get upgrade -y`
+- `sudo apt-get install nginx -y`
+- `sudo apt-get install npm -y`
+- `curl -sl https://deb.nodesource.com/setup_6.x | sudo -E bash -`
+- `sudo apt-get install nodejs -y`
+- `sudo npm install pm2 -g`
+<br>
+
+After these commands are called, all the pre-requisites have been successfully installed and the application can be launched. The launch of this application can also be automated by using `cd` to move into the Vagrant/app folder inside the vm (where the app's directory is located). From here, if we `npm install` and `npm start`, the application launches but the terminal hangs. To avoid this, we install the forever module by using `npm install forever -g`. Then we use `npm install` normally in the app directory, and then use the forever module like this: `forever start app.js` to launch the app with `forever`, so the app launches in the background and doesn't make the terminal hang.<br>
+
+- `cd /srv/provisioning/Vagrant/app`
+- `npm install forever -g`
+- `npm install`
+- `forever start app.js`
