@@ -98,4 +98,32 @@ After these commands are called, all the pre-requisites have been successfully i
 - `cd /srv/provisioning/Vagrant/app`
 - `npm install forever -g`
 - `npm install`
-- `forever start app.js`
+- `forever start app.js`<br><br>
+
+
+# Linux Variables
+Creating a linux variable: `FIRST_NAME=SHAHRUKH`<br>
+Printing out the variable: `echo $FIRST_NAME`<br>
+Viewing the environment variables: `printenv VAR_NAME` and `env`, e.g. `printenv PATH`<br>
+Creating an environment variable: `export VAR_NAME`, e.g. `export LAST_NAME=SMITH`<br>
+Deleting an environment variable: `unset VAR_NAME`, e.g. `unset LAST_NAME`<br>
+Keeping an environment variable persistent: Set it inside `~/.bash_profile`
+
+Connecting to the DB with Linux:
+```
+// connect to database
+if(process.env.DB_HOST) {
+  mongoose.connect(process.env.DB_HOST);
+
+  app.get("/posts" , function(req,res){
+      Post.find({} , function(err, posts){
+        if(err) return res.send(err);
+        res.render("posts/index" , {posts:posts});
+      })
+  });
+}
+```
+<br>
+
+# Setting up a Reverse Proxy
+We're going to use reverse proxying so that any traffic to the target IP address (`192.168.10.100`) is automatically redirected to the application, which is hosted on hosted on `port 3000` (`192.168.10.100:3000`). We're doing this by created a file called `default` and setting up an nginx configuration that listens to any traffic from `port 80` and redirects it to `port 3000`. In the provisioning shell file, we'll copy that file and move it into `/etc/nginx/sites-available/` to replace the nginx config file there with our own one. We do this by using: `sudo cp /srv/provisioning/vagrant/default /etc/nginx/sites-available/`. Now that we've edited the nginx configuration, we have to restart nginx. So we also put in `sudo systemctl restart nginx` to refresh nginx. Then we run the application as normal, and the reverse proxy should be working perfectly fine, redirecting traffic from `192.168.10.100` to `192.168.10.100:3000`.
