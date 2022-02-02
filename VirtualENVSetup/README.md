@@ -70,7 +70,7 @@ To display the contents of a file: `cat name-of-file`<br>
 To delete a file: `rm -rf name-of-file-or-directory`<br>
 To copy a file: `cp target-file-name location`<br>
 To move a file: `mv source-file-name target-location-name`<br>
-To list current processes: `top`<br>
+To list current active processes: `top`<br>
 To check file permissions: `ll`<br>
 To change file permissions: `chmod permission name-of-file`<br>
 
