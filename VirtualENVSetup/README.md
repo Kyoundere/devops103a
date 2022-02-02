@@ -81,7 +81,7 @@ On the localhost, cd into Vagrant/environment/spec-tests and perform these two c
 `bundle`<br>
 Which will install a few pre-requisites on the localhost.<br><br>
 
-The command 'rake spec' while in the spec-tests/ directory will perform a series of checks to see if you have the pre-requisites required to successfully launch the application. If there are any missing after this guide, they will need to be installed for the app to work.<br><br>
+The command `rake spec` while in the spec-tests/ directory will perform a series of checks to see if you have the pre-requisites required to successfully launch the application. If there are any missing after this guide, they will need to be installed for the app to work.<br><br>
 
 I've automated all of the installations required inside the Unbuntu VM and put them into the `provisions.sh` shell file, which is coded to automatically launch whenever `vagrant up` is called. These include:<br><br>
 - `sudo apt-get update -y`
