@@ -1,7 +1,7 @@
 # Pre-requisites:
 Go on "Turn Windows Features On and Off", disable Hyper-V. <br><br>
 If it gives a virtualisation error upon using "`vagrant up`" (e.g. amd-v not enabled), go into bios and enable SMV or AMD-V.<br><br>
-Add the `Vagrant/` directory into `.gitignore` (the directory where you will install the vagrant VM).
+Add the `.vagrant/` directory into `.gitignore` (the directory where you will install the vagrant VM).
 <br><br>
 ![Vagrant](diagram.png)
 # Install Ruby 
