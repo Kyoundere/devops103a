@@ -155,3 +155,28 @@ In the provisioning shell file, we'll copy that file and move it into `/etc/ngin
 We do this by using: `sudo cp /srv/provisioning/vagrant/default /etc/nginx/sites-available/`.<br><br>
 Having edited the nginx configuration, we can restart nginx to apply the chances. We restart nginx with the command `sudo systemctl restart nginx`.<br><br>
 Now we run the application as normal, and the reverse proxy should be working perfectly fine, redirecting traffic from `192.168.10.100` to `192.168.10.100:3000`.<br><br>
+
+# Setting up MongoDB
+
+We `vagrant ssh db` to specifically launch the second VM.<br>
+We try `sudo apt-get update -y` to double check this VM has internet access.<br><br>
+
+
+Now we run the following command to add a keyserver for mongodb:<br>
+`sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv D68FA50FEA312927`<br><br>
+
+Then we grab this specific version of mongodb:<br>
+`echo "deb https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list`<br><br>
+
+Refresh the package-manager: <br>
+`sudo apt-get update -y`<br>
+`sudo apt-get upgrade -y`<br>
+
+We now install the 3.2.20 version of mongodb:<br>
+`sudo apt-get install -y mongodb-org=3.2.20 mongodb-org-server=3.2.20 mongodb-org-shell=3.2.20 mongodb-org-mongos=3.2.20 mongodb-org-tools=3.2.20`
+
+Now, the database has been installed. We have to change our 
+edit mongodb.conf 0.0.0.0
+
+
+aws 84 availability zones, 26 geographic regions, plans more 24 availability 
