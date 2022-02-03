@@ -91,19 +91,38 @@ I've automated all of the installations required inside the Unbuntu VM and put t
 - `curl -sl https://deb.nodesource.com/setup_6.x | sudo -E bash -`
 - `sudo apt-get install nodejs -y`
 - `sudo npm install pm2 -g`
-<br>
+<br><br>
 
-After these commands are called, all the pre-requisites have been successfully installed and the application can be launched. The launch of this application can also be automated by using `cd` to move into the Vagrant/app folder inside the vm (where the app's directory is located). From here, if we `npm install` and `npm start`, the application launches but the terminal hangs. To avoid this, we install the forever module by using `npm install forever -g`. Then we use `npm install` normally in the app directory, and then use the forever module like this: `forever start app.js` to launch the app with `forever`, so the app launches in the background and doesn't make the terminal hang.<br>
+Now, all the pre-requisites have been successfully installed and the application can be launched.<br><br>
+The launch of this application can now be automated.<br><br>
+We can do this by using `cd` to move into the Vagrant/app folder inside the vm (where the app's directory is located).<br><br>
+From here, if we `npm install` and `npm start`, the application launches but the terminal hangs.<br><br>
+To avoid this, we install the forever module by using `npm install forever -g`.<br><br>
+Then we use `npm install` normally in the app directory, and then use the forever module like this: `forever start app.js` to launch the app with `forever`.<br><br>
+This makes it so that the app launches in the background and doesn't make the terminal hang.<br><br>
 
 - `cd /srv/provisioning/Vagrant/app`
 - `npm install forever -g`
 - `npm install`
 - `forever start app.js`<br>
 
-I've also added a section in the `Vagrantfile` to run two VM machines at once, one called `app` and one called `db`. This was done through defining two different VM's and passing them through to be used to assign private networks, synced folders and a provisions file:<br>
-`config.vm.define "app" do |app|`<br>
-  `app.vm.network "private_network", ip: "192.168.10.100"`<br>
-`config.vm.define "db" do |db|`<br>
+I've also added a section in the `Vagrantfile` to run two VM machines at once.<br><br>
+One is called `app` and one is called `db`.<br><br>
+This was done by defining two different VM's and passing them through to be used to assign the operating system, private networks, synced folders and a provisions file:<br><br>
+
+```
+config.vm.define "app" do |app`
+    app.vm.box = "ubuntu/xenial64"
+    app.vm.network "private_network", ip: "192.168.10.100"
+    app.vm.provision "shell", path: "provision.sh", privileged: false 
+    app.vm.synced_folder "../","/srv/provisioning"
+end
+config.vm.define "db" do |db|
+    db.vm.box = "ubuntu/xenial64"
+    db.vm.network "private_network", ip: "192.168.10.150"
+end
+```
+<br>
 
 # Linux Variables
 Creating a linux variable: `FIRST_NAME=SHAHRUKH`<br>
@@ -130,4 +149,9 @@ if(process.env.DB_HOST) {
 <br>
 
 # Setting up a Reverse Proxy
-We're going to use reverse proxying so that any traffic to the target IP address (`192.168.10.100`) is automatically redirected to the application, which is hosted on hosted on `port 3000` (`192.168.10.100:3000`). We're doing this by created a file called `default` and setting up an nginx configuration that listens to any traffic from `port 80` and redirects it to `port 3000`. In the provisioning shell file, we'll copy that file and move it into `/etc/nginx/sites-available/` to replace the nginx config file there with our own one. We do this by using: `sudo cp /srv/provisioning/vagrant/default /etc/nginx/sites-available/`. Now that we've edited the nginx configuration, we have to restart nginx. So we also put in `sudo systemctl restart nginx` to refresh nginx. Then we run the application as normal, and the reverse proxy should be working perfectly fine, redirecting traffic from `192.168.10.100` to `192.168.10.100:3000`.
+We're going to use reverse proxying so that any traffic to the target IP address (`192.168.10.100`) is automatically redirected to the application, which is hosted on hosted on `port 3000` (`192.168.10.100:3000`).<br><br>
+We're doing this by created a file called `default` and setting up an nginx configuration that listens to any traffic from `port 80` and redirects it to `port 3000`.<br><br>
+In the provisioning shell file, we'll copy that file and move it into `/etc/nginx/sites-available/` to replace the nginx config file there with our own one.<br><br>
+We do this by using: `sudo cp /srv/provisioning/vagrant/default /etc/nginx/sites-available/`.<br><br>
+Having edited the nginx configuration, we can restart nginx to apply the chances. We restart nginx with the command `sudo systemctl restart nginx`.<br><br>
+Now we run the application as normal, and the reverse proxy should be working perfectly fine, redirecting traffic from `192.168.10.100` to `192.168.10.100:3000`.<br><br>
