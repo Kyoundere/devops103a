@@ -98,8 +98,12 @@ After these commands are called, all the pre-requisites have been successfully i
 - `cd /srv/provisioning/Vagrant/app`
 - `npm install forever -g`
 - `npm install`
-- `forever start app.js`<br><br>
+- `forever start app.js`<br>
 
+I've also added a section in the `Vagrantfile` to run two VM machines at once, one called `app` and one called `db`. This was done through defining two different VM's and passing them through to be used to assign private networks, synced folders and a provisions file:<br>
+`config.vm.define "app" do |app|`<br>
+  `app.vm.network "private_network", ip: "192.168.10.100"`<br>
+`config.vm.define "db" do |db|`<br>
 
 # Linux Variables
 Creating a linux variable: `FIRST_NAME=SHAHRUKH`<br>
