@@ -176,7 +176,8 @@ Refresh the package-manager: <br>
 We now install the 3.2.20 version of mongodb:<br>
 `sudo apt-get install -y mongodb-org=3.2.20 mongodb-org-server=3.2.20 mongodb-org-shell=3.2.20 mongodb-org-mongos=3.2.20 mongodb-org-tools=3.2.20`
 
-Now, the database has been installed. We have to change our ip on the mongodb config file to `0.0.0.0` from `127.0.0.1`.
+Now, the database has been installed. We have to change our ip on the mongodb config file to `0.0.0.0` from `127.0.0.1`, we can use a single-line command to search for instances of '127.0.0.1' and replace them with '0.0.0.0':<br>
+`sudo sed -i 's/127.0.0.1/0.0.0.0/' /etc/mongod.conf`<br><br>
 
 # Amazon Web Services (AWS)
 
@@ -216,11 +217,23 @@ On the AWS website, enter the security tab on your instance, security groups and
 
 Now if you `npm start` the application, you should be able to see the app running at port 3000 on the public IP.
 
-create another ec2 for mongodb
-set up install mongodb required version
-change mongo.conf to allow app access
-security will need allow app instance only to access db
-27017 app ip
+Next, we create another EC2 for MongoDB<br>
+Start by updating and upgrading the repos as usual:<br>
+`sudo apt-get update -y && sudo apt-get upgrade -y`<br><br>
+Then we'll assign the keyserver onto our system:<br>
+`sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv D68FA50FEA312927`<br><br>
+And now we grab the specific 3.2 version of MongoDB from their online repository:<br>
+`echo "deb https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list`<br><br>
+Since we've just grabbed new packages from a repository, let's update and upgrade again:<br>
+`sudo apt-get update -y && sudo apt-get upgrade -y`<br><br>
+And now we can finally install MongoDB 3.2.20:<br>
+`sudo apt-get install -y mongodb-org=3.2.20 mongodb-org-server=3.2.20 mongodb-org-shell=3.2.20 mongodb-org-mongos=3.2.20 mongodb-org-tools=3.2.20`<br><br>
+The only thing left to do now is to change the mongod.conf file in /etc/ and change the IP from 127.0.0.1, which we can use the command to do, replacing any instance of '127.0.0.1' with '0.0.0.0':<br>
+`sudo sed -i 's/127.0.0.1/0.0.0.0/' /etc/mongod.conf`<br><br>
+After updating the config file, all we have to do is restart MongoDB and we can exit the DB VM:<br>
+`sudo systemctl restart mongod`<br><br>
 
-scp -i eng103a.pem -r ~/devops103a/Vagrant/ ubuntu@ec2-34-242-2-86.eu-west-1.compute.amazonaws.com:
-
+After all this, we just need to ssh back into the App VM instance, and create the environment variable DB_HOST that includes the public IP address of the DB VM, which will allow the app the ask for information from the database and can be found on AWS website:<br>
+`echo "export DB_HOST='mongodb://PUBLICIPADDRESSHERE:27017/posts'" >> ~/.bash_profile
+source ~/.bash_profile`<br><br>
+Finally, we can CD into the 'app' folder, run `node seeds/seed.js` to seed the database, and then subsequently use `npm start`, which will launch the app on port `3000`, and the database can be accessed via the `:3000/posts`.

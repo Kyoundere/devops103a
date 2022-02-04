@@ -9,7 +9,7 @@ sudo npm install forever -g
 sudo cp /srv/provisioning/vagrant/default /etc/nginx/sites-available/
 sudo systemctl restart nginx
 cd /srv/provisioning/Vagrant/app 
-echo "export DB_HOST='mongodb://192.168.10.150:27017/posts'" >> ~/.bash_profile
+echo "export DB_HOST='mongodb://34.242.2.86:27017/posts'" >> ~/.bash_profile
 source ~/.bash_profile
 sudo npm install 
 forever start app.js
