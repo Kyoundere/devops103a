@@ -175,8 +175,42 @@ Refresh the package-manager: <br>
 We now install the 3.2.20 version of mongodb:<br>
 `sudo apt-get install -y mongodb-org=3.2.20 mongodb-org-server=3.2.20 mongodb-org-shell=3.2.20 mongodb-org-mongos=3.2.20 mongodb-org-tools=3.2.20`
 
-Now, the database has been installed. We have to change our 
-edit mongodb.conf 0.0.0.0
+Now, the database has been installed. We have to change our ip on the mongodb config file to `0.0.0.0` from `127.0.0.1`.
+
+# Amazon Web Services (AWS)
+
+The AWS Cloud spans 84 Availability Zones within 26 geographic regions around the world, with announced plans for 24 more Availability Zones and 8 more AWS Regions in Australia, Canada, India, Israel, New Zealand, Spain, Switzerland, and United Arab Emirates (UAE).<br><br>
+
+Provides IaaS, PaaS and SaaS:
+- IaaS: Infrastructure as a Service
+- PaaS: Platform as a Service
+- SaaS: Software as a Service
+
+<br>
+EC2 (Elastic Compute Cloud) allows us to rent a virtual machine with the OS of your choice, so we don't have to set everything up ourselves from dependencies to virtualbox to provisioning and security. Important for migrating to the cloud, as well as not having to worry about power requirements, space considerations, expensive computer hardware, security, and software updates. 
+<br><br>
+
+# Setting Up AWS
+
+OS: Ubuntu Server 18.04<br>
+Architecture: x86<br>
+Instance Type: t2 Micro<br>
+Subnet: DevOps 103a<br>
+
+Key is required to access the EC2 machine, save key as `keyname.pem` and move it into `~/.ssh`. Select connect on EC2, and copy the SSH login commands into terminal (after CD'ing into `~/.ssh`.<br>
 
 
-aws 84 availability zones, 26 geographic regions, plans more 24 availability 
+After logging in, we need to move our data into the EC2 machine.<br>
+`sudo apt-get install subversion -y`<br>
+`sudo svn GitHubTrunkLink`<br>
+These commands will download a specific trunk (folder) of our GitHub project into the machine. I'll be copying the entire Vagrant folder, and then using `rm -rf filename` to delete unneeded files, such as `Vagrantfile`.<br>
+
+Next, we install nginx again:<br>
+`sudo apt-get install nginx -y`<br>
+
+If you access the public IP now, it'll show the nginx home page.<br>
+However, if we launch the application (after installing all the dependencies), we won't be able to access the app at port 3000.<br>
+This is because the port is blocked, and we need to open it.<br><br>
+On the AWS website, enter the security tab on your instance, security groups and edit inbound rules. Add Custom TCP connection at port 3000 for any IPv4 address.<br><br>
+
+Now if you `npm start` the application, you should be able to see the app running at port 3000 on the public IP.
