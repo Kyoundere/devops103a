@@ -4,6 +4,7 @@ If it gives a virtualisation error upon using "`vagrant up`" (e.g. amd-v not ena
 Add the `.vagrant/` directory into `.gitignore` (the directory where you will install the vagrant VM).
 <br><br>
 ![Vagrant](diagram.png)
+![2 Tier Architecture](2tier.png)
 # Install Ruby 
 https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.6.6-1/rubyinstaller-devkit-2.6.6-1-x64.exe
 <br>
@@ -214,3 +215,12 @@ This is because the port is blocked, and we need to open it.<br><br>
 On the AWS website, enter the security tab on your instance, security groups and edit inbound rules. Add Custom TCP connection at port 3000 for any IPv4 address.<br><br>
 
 Now if you `npm start` the application, you should be able to see the app running at port 3000 on the public IP.
+
+create another ec2 for mongodb
+set up install mongodb required version
+change mongo.conf to allow app access
+security will need allow app instance only to access db
+27017 app ip
+
+scp -i eng103a.pem -r ~/devops103a/Vagrant/ ubuntu@ec2-34-242-2-86.eu-west-1.compute.amazonaws.com:
+
