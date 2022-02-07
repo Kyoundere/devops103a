@@ -4,7 +4,6 @@ If it gives a virtualisation error upon using "`vagrant up`" (e.g. amd-v not ena
 Add the `.vagrant/` directory into `.gitignore` (the directory where you will install the vagrant VM).
 <br><br>
 ![Vagrant](diagram.png)
-![2 Tier Architecture](2tier.png)
 # Install Ruby 
 https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.6.6-1/rubyinstaller-devkit-2.6.6-1-x64.exe
 <br>
@@ -193,6 +192,8 @@ EC2 (Elastic Compute Cloud) allows us to rent a virtual machine with the OS of y
 <br><br>
 
 # Setting Up AWS
+
+![2 Tier Architecture](2tier.png)
 
 OS: Ubuntu Server 18.04<br>
 Architecture: x86<br>
