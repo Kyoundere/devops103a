@@ -208,6 +208,8 @@ After logging in, we need to move our data into the EC2 machine.<br>
 `sudo apt-get install subversion -y`<br>
 `sudo svn GitHubTrunkLink`<br>
 These commands will download a specific trunk (folder) of our GitHub project into the machine. I'll be copying the entire Vagrant folder, and then using `rm -rf filename` to delete unneeded files, such as `Vagrantfile`.<br>
+<br> Alternatively, can use the SCP command to move data directly from our computer into the vm, seems to be more secure: <br>
+`scp -i eng103a.pem -r ~/devops103a/Vagrant/ ubuntu@ec2-3-250-15-190.eu-west-1.compute.amazonaws.com:~`<br>
 
 Next, we install nginx again:<br>
 `sudo apt-get install nginx -y`<br>
