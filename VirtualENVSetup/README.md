@@ -199,7 +199,8 @@ OS: Ubuntu Server 18.04<br>
 Architecture: x86<br>
 Instance Type: t2 Micro<br>
 Subnet: DevOps 103a<br>
-
+Inbound rules: HTTP: my IP, custom TCP at port 3000, SSH at port 20 (to access)
+               
 Key is required to access the EC2 machine, save key as `keyname.pem` and move it into `~/.ssh`. Select connect on EC2, and copy the SSH login commands into terminal (after CD'ing into `~/.ssh`.<br>
 
 
