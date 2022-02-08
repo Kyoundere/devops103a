@@ -199,7 +199,7 @@ OS: Ubuntu Server 18.04<br>
 Architecture: x86<br>
 Instance Type: t2 Micro<br>
 Subnet: DevOps 103a<br>
-Inbound rules: HTTP: my IP, custom TCP at port 3000, SSH at port 20 (to access)
+Inbound rules: HTTP: my IP, custom TCP at port 3000, SSH at port 22 (to access)
                
 Key is required to access the EC2 machine, save key as `keyname.pem` and move it into `~/.ssh`. Select connect on EC2, and copy the SSH login commands into terminal (after CD'ing into `~/.ssh`.<br>
 
@@ -221,7 +221,14 @@ On the AWS website, enter the security tab on your instance, security groups and
 
 Now if you `npm start` the application, you should be able to see the app running at port 3000 on the public IP.
 
+
+
 Next, we create another EC2 for MongoDB<br>
+OS: Ubuntu Server 18.04<br>
+Architecture: x86<br>
+Instance Type: t2 Micro<br>
+Subnet: DevOps 103a<br>
+Inbound rules: Custom TCP: 27017 any IP, SSH at port 22 (to access)<br><br>
 Start by updating and upgrading the repos as usual:<br>
 `sudo apt-get update -y && sudo apt-get upgrade -y`<br><br>
 Then we'll assign the keyserver onto our system:<br>
@@ -238,6 +245,21 @@ After updating the config file, all we have to do is restart MongoDB and we can 
 `sudo systemctl restart mongod`<br><br>
 
 After all this, we just need to ssh back into the App VM instance, and create the environment variable DB_HOST that includes the public IP address of the DB VM, which will allow the app the ask for information from the database and can be found on AWS website:<br>
-`echo "export DB_HOST='mongodb://PUBLICIPADDRESSHERE:27017/posts'" >> ~/.bash_profile
-source ~/.bash_profile`<br><br>
-Finally, we can CD into the 'app' folder, run `node seeds/seed.js` to seed the database, and then subsequently use `npm start`, which will launch the app on port `3000`, and the database can be accessed via the `:3000/posts`.
+`echo "export DB_HOST='mongodb://PUBLICIPADDRESSHERE:27017/posts'" > ~/.bash_profile`
+`source ~/.bash_profile`<br><br>
+Finally, we can CD into the 'app' folder, run `node seeds/seed.js` to seed the database, and then subsequently use `npm start`, which will launch the app on port `3000`, and the database can be accessed via the `:3000/posts`.<br><br>
+
+# AMIs
+
+AWS Amazon Machine Image/s (AMIs)
+- helps us save the data
+- helps automate deployment on cloud
+
+Creating an AMI: Select a running instance, right click, images, `create image`.<br><br>
+After creating this image, you can launch an instance from this image that preserves the volume of the snapshot, which will keep changes of the instance from when the AMI was created.
+
+Deploying an AMI:
+- On the left vertical bar, select '`AMIs`'.
+- Find the created AMI, select `create instance from image`.
+- Pick the settings as used before, with the right security group settings.
+- Review and launch your instance.
