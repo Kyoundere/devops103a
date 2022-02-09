@@ -252,7 +252,7 @@ Finally, we can CD into the 'app' folder, run `node seeds/seed.js` to seed the d
 # AMIs
 
 AWS Amazon Machine Image/s (AMIs)
-- helps us save the data
+- helps us save and back-up the data
 - helps automate deployment on cloud
 
 Creating an AMI: Select a running instance, right click, images, `create image`.<br><br>
@@ -263,3 +263,32 @@ Deploying an AMI:
 - Find the created AMI, select `create instance from image`.
 - Pick the settings as used before, with the right security group settings.
 - Review and launch your instance.
+
+# S3
+Simple storage service
+globally available
+can store anything
+used for DR (Disaster Recovery)
+Can apply create bucket/object, read, update, delete (crud) actions
+
+AWS Sec& ACCES KES
+AWSCLI
+
+Standard storage: can access data anytime
+Glacier storage: infrequent data access, cheaper
+
+AWSCLI depends upon python3 or above
+install pip3
+ensure that it's using pip3
+(ubuntu uses pip2 by default)
+
+sudo apt-get install python3-pip -y
+alias python=python3.7
+sudo pip3 install awscli
+aws configure
+enter AWS access key, secret key, eu-west-1, json
+aws s3 ls
+
+if github goes down, not completely dependent on github
+have second option available for storage
+good disaster recovery
