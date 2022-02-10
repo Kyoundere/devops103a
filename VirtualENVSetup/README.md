@@ -265,30 +265,142 @@ Deploying an AMI:
 - Review and launch your instance.
 
 # S3
-Simple storage service
-globally available
-can store anything
-used for DR (Disaster Recovery)
-Can apply create bucket/object, read, update, delete (crud) actions
+- Simple Storage Service
+- Database available on AWS
+- Globally available
+- DR (Disaster Recovery)
+- Can store any files
+- CRUD ACTIONS (Create, Bucket/Object, Read, Update, Delete)
+From local host to EC2
 
-AWS Sec& ACCES KES
-AWSCLI
+E.g. when github goes down, S3 will still have the storage available as an option for disaster recovery.
 
-Standard storage: can access data anytime
-Glacier storage: infrequent data access, cheaper
+![S3](DevOpsIsh.png)
 
-AWSCLI depends upon python3 or above
-install pip3
-ensure that it's using pip3
-(ubuntu uses pip2 by default)
+AWSCLI<br>
+AWS SEC & Access Keys<br>
+Required to access S3 from EC2 storage for CRUD
+actions from any AWS zone.
 
-sudo apt-get install python3-pip -y
-alias python=python3.7
-sudo pip3 install awscli
-aws configure
-enter AWS access key, secret key, eu-west-1, json
-aws s3 ls
+Standard - Data be accessed anytime<br>
+Glacier - Infrequent access to data, but cheaper<br>
+CDN - Content Delivery Network<br><br>
 
-if github goes down, not completely dependent on github
-have second option available for storage
-good disaster recovery
+How to access S3:<br>
+- Enter EC2 instance
+- Python 3 or above
+- Install pip3
+- Ensure to use python 3
+- `sudo apt install python3.7-minimal`
+- alias python=python3.7
+- sudo pip3 install awscli
+- aws configure
+- Enter access key, secret key, region (eu-west-1), and json for output data type
+- aws s3 ls
+
+To create a bucket after accessing S3:
+- `aws s3 mb s3://name-of-bucket`
+- The name of the bucket cannot contain underscores due to the naming convention
+
+Copy files from the EC2 into the S3 storage:
+- `aws s3 cp nameoffile.txt s3://name-of-bucket`
+
+Download files from the S3 storage into the EC2:
+- `aws s3 cp s3://name-of-bucket/name-of-file.txt nameoffile.txt`
+
+Deleting local file test.txt:<br>
+- `s3.Object(bucket_name, filename).delete()`
+
+Recreating the bucket (only works if it doesn't exist already):<br>
+- `s3.create_bucket(Bucket=bucket_name, CreateBucketConfiguration=location)`
+
+Deleting the entire bucket (only works if it's empty):
+- `s3.Bucket(bucket_name).delete()`
+
+Upload file to the bucket called test.txt:<br>
+- `s3.Bucket(bucket_name).upload_file(filename, "hooyah")`
+
+Download a file from the bucket called test.txt:<br>
+- `s3.Bucket(bucket_name).download_file(filename, "wongotongo.txt")`
+<br><br>
+
+All in combination, I have created an interactive file that asks for input to use each action on:<br>
+
+
+```python
+#!/usr/bin/env python
+import boto3
+location = {'LocationConstraint': "eu-west-1"}
+s3 = boto3.resource('s3')
+bucket_name = input("what is the bucket name\n")
+
+while True:
+    action = input("what would you like you to do? c for createbucket, db for delete bucket, d for delete file, u for upload, dl for download, e for exit\n").lower()
+
+    if action == "db":
+        s3.Bucket(bucket_name).delete()
+    elif action == "cb":
+        s3.create_bucket(Bucket=bucket_name, CreateBucketConfiguration=location)
+    elif action == "d":
+        filename = input("what is the filename?\n")
+        s3.Object(bucket_name, filename).delete()
+    elif action == "u":
+        filename = input("what is the name of the file you're uploading?\n")
+        targetfilename = input("what is the destination file name?\n")
+        s3.Bucket(bucket_name).upload_file(filename, targetfilename)
+    elif action == "dl":
+        filename = input("what is the name of the file you're downloading?\n")
+        targetfilename = input("what is the destination file name?\n")
+        s3.Bucket(bucket_name).download_file(filename, targetfilename)
+    elif action == "e":
+        break
+```
+
+# Autoscaling 
+Autoscaling and Load Balancing:
+- Autoscaling autoamtically adjusts the amount of computational resources based on the server load
+- Load Balancing distributes traffic between EC2 instances so that no one instance gets overwhelmed, especially when scaling out to introduce more instances
+- Results in high availability (will stay available and stable for a long time, as any instances that don't pass health checks will be terminated automatically and a new instance will be spun up to replace it with no downtime across multiple AZs
+- Also results in high scalability on demand in response to multiple factors such as high CPU usage or network load or number of users to stay stable, as well as scaling back inwards to save fees and money when the servers are unneeded
+
+![Load Balancer](../loadbalancer.png)
+
+Load balancer acts after a server has scaled out, so when the new backup servers are incorporated into your system it will automatically distribute the network load evenly across all the servers, so that the new server will relieve the load on the other servers.
+
+E.g. An online store going through Christmas and January:
+- Of course there'll be many more people trying to buy from the store during christmas.
+so the network load during christmas will be really high.<br>
+- Then as we get into january the network load will go down pretty quickly.<br>
+- If you hosted everything locally, you would usually buy the extra servers/hardware - outright to deal with christmas network load.<br>
+- When they're no longer needed during january you're losing a lot of money because you have to sell them back or they will stay unused.
+- Cloud computing autoscaling is a big solution for this, because resources can be purchased as they are needed, so when christmas arrives a company can just use the autoscaling functionality to scale out the business and the load balancer will relieve the load on the servers. 
+- Then as soon as christmas is over and the network traffic drops, the system will autoscale again but inwards this time, so you will no longer be paying for the servers you don't need.
+
+# Setting Up Auto Scaling + Load Balancer
+
+- Select `Launch Template` on AWS
+- `Create Launch Template`
+- Select your AMI to launch each auto scaling instance from a snapshot
+- Ensure the security group is correct for the ports
+- At the end of `Advanced details`, enter user-data to automate a script that launches every time an auto scaling group instance is launched, this is my user-data script:
+```#!/bin/bash
+sudo apt update -y && sudo apt upgrade -y
+sudo su ubuntu
+echo "export DB_HOST=mongodb://eng103a-zilamo.duckdns.org:27017/posts" > ~/.bash_profile
+source ~/.bash_profile
+cd ~/duckdns
+./duck.sh
+cd /home/ubuntu/code/Vagrant/app && node seeds/seed.js
+cd /home/ubuntu/code/Vagrant/app && screen -d -m npm start
+```
+- Next, select your newly-created launch template and select 'create auto scaling group'
+- Choose multiple Availability Zones to ensure high availability is reached, preferably in separate regions (such as 1a 1b 1c)
+- Next, attach to a new load balancer
+- Internet-facing Application Load Balancer 
+- Minimum 2, Desired 2, Maximum 3
+- Enable logging via CloudWatch
+- Target tracking policy: employ new instances at 25% CPU usage
+
+Now while your auto scaling group is up, it should run 2 instances minimum, and try to keep at 2 instances, keeping it highly available in case the other instance goes down.<br>
+If the CPU usage spikes above 25% it will immediately employ an extra instance, which makes it highly scalable to deal with a higher load on the server.<br>
+If the CPU usage eases down, one of the instances will terminate itself to return back to the desired 2 instances. 
