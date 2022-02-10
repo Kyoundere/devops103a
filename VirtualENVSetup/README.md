@@ -404,3 +404,8 @@ cd /home/ubuntu/code/Vagrant/app && screen -d -m npm start
 Now while your auto scaling group is up, it should run 2 instances minimum, and try to keep at 2 instances, keeping it highly available in case the other instance goes down.<br>
 If the CPU usage spikes above 25% it will immediately employ an extra instance, which makes it highly scalable to deal with a higher load on the server.<br>
 If the CPU usage eases down, one of the instances will terminate itself to return back to the desired 2 instances. 
+
+- internet gateway is public access
+- route table can decide who can come in to the 'guest room'
+- bedroom key is exclusive to myself
+- security group is firewall on an instance level
