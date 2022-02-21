@@ -663,6 +663,7 @@ Could you explain CI/CD?:
 
 # IAC with Ansible
 
+![Ansible](ansible.png)
 
 ### Let's create Vagrantfile to create Three VMs for Ansible architecture
 #### Ansible controller and Ansible agents 
