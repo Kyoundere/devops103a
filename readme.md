@@ -45,7 +45,7 @@
 ### Benefits of DevOps
 
 **Four pillars of DevOps best practice**
-- Easy of Use
+- Ease of Use
 - Flexibility
 - Robustness; faster delivery of product
 - Cost effective
