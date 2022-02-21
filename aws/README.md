@@ -53,4 +53,11 @@
 - Step 4: Create route tables for the public subnet to let the network know who to allow in
 - Step 4.1: Edit the route table to allow traffic in from the pbulic internet gateway
 - Step 4.2: Associate the route tables to the public subnet
-- Step 5: Create a security group within the public subnet which allows 
+- Step 5: Create a security group within the public subnet which allows
+
+How did you allow access to app/db:
+- Both app and database operating under a new vpc
+- Created a separate subnet for each of them
+- Created routing tables and security groups for each subnet to tell exactly who has access to each port, such as the public app subnet being accessible via HTTP on port 80 and custom TCP at port 3000 from all IP's, SSH from port 20 only at my IP. 
+- Private subnet only accessible via SSH at port 20 from my IP and port 27017 from the application's IP and nothing else
+- Setting these up and splitting up each instance into separate subnets under the same VPC has made me more confident in being able to take steps towards creating a microservices architecture for a service, which is more reliable and easily upgradable with minimal downtime for the business since they're independently scalable and promote fault isolation.
