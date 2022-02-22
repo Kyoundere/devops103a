@@ -32,13 +32,14 @@
 - [IAC with Ansible](#iac-with-ansible)
     - [Let's create Vagrantfile to create Three VMs for Ansible architecture](#lets-create-vagrantfile-to-create-three-vms-for-ansible-architecture)
       - [Ansible controller and Ansible agents](#ansible-controller-and-ansible-agents)
-  - [Checking Vagrant Instances](#checking-vagrant-instances)
-  - [Installing Ansible](#installing-ansible)
   - [Benefits of Ansible](#benefits-of-ansible)
   - [What is IaC](#what-is-iac)
+  - [Checking Vagrant Instances](#checking-vagrant-instances)
+  - [Installing Ansible](#installing-ansible)
   - [Ansible Playbooks](#ansible-playbooks)
     - [Creating a playbook:](#creating-a-playbook)
     - [Next, we will make a yml file to move the app folder into the web server, install all the dependencies required and then install and run the application:](#next-we-will-make-a-yml-file-to-move-the-app-folder-into-the-web-server-install-all-the-dependencies-required-and-then-install-and-run-the-application)
+  - [Migrating Ansible to Cloud](#migrating-ansible-to-cloud)
 
 # What is DevOps
 ## Why should we use DevOps
@@ -725,6 +726,20 @@ Could you explain CI/CD?:
  end
 ```
 
+## Benefits of Ansible
+- Don't need to manually SSH into each server to try to execute commands 
+- The more servers there are, the more impossible it becomes to do everything manually (e.g. if you have 100 servers, how will you perform a command in all 100 of them without a controller like ansible?)
+- Can use ansible to gather information about all the servers at once or individual ones
+- Very simple and easy to set up (it took us about 10 minutes to install ansible, and 5 minutes to edit the hosts file)
+
+## What is IaC
+
+- Managing and provisioning of infrastructure through code instead of through manual processes with an emphasis on self-service
+- Such as being able to execute commands from multiple servers at once through code with a controller such as Ansible in YAML 
+- Results in consistency throughout your configuration because it's all coming from the same code using the controller, which minimises the risk of human error
+overall 
+- Results in financial savings for a business that implements IaC via increased productivity and makes it much easier to scale up and attach new servers to the controller
+
 ## Checking Vagrant Instances
 
 To check if the vagrant servers work and have internet access, we'll individually SSH into them with `vagrant ssh instancename` and perform the `sudo apt-get update -y && sudo apt-get upgrade -y` command on each one (web, db, controller).<br>
@@ -771,21 +786,6 @@ To check if the vagrant servers work and have internet access, we'll individuall
 - `ansible all -a "ls"`
 - Which should list the local storage of each connected node
 
-## Benefits of Ansible
-- Don't need to manually SSH into each server to try to execute commands 
-- The more servers there are, the more impossible it becomes to do everything manually (e.g. if you have 100 servers, how will you perform a command in all 100 of them without a controller like ansible?)
-- Can use ansible to gather information about all the servers at once or individual ones
-- Very simple and easy to set up (it took us about 10 minutes to install ansible, and 5 minutes to edit the hosts file)
-
-## What is IaC
-
-- Managing and provisioning of infrastructure through code instead of through manual processes with an emphasis on self-service
-- Such as being able to execute commands from multiple servers at once through code with a controller such as Ansible in YAML 
-- Results in consistency throughout your configuration because it's all coming from the same code using the controller, which minimises the risk of human error
-overall 
-- Results in financial savings for a business that implements IaC via increased productivity and makes it much easier to scale up and attach new servers to the controller
-
-ansible all -m ping
 
 ## Ansible Playbooks
 - Playbooks save time
@@ -858,3 +858,54 @@ ansible all -m ping
          cd app; npm install; screen -d -m npm start
 ```
 
+## Migrating Ansible to Cloud
+
+- To migrate ansible onto cloud, we need to create a .yml file that is able to launch new ec2 instances
+- Also needs SSH permission and secret-key + access-key to gain access to AWS
+- Following commands will show exactly how to set up an ansible vault password to ensure security with your secret and access key 
+- Will also install all the dependencies required for launching and configuring the EC2 instances:
+- `sudo apt-get update -y && sudo apt-get upgrade -y`
+- `sudo apt install software-properties-common -y`
+- `sudo add-apt-repository ppa:deadsnakes/ppa`
+- `sudo apt install python3.9 -y`
+- `sudo su`
+- `update-alternatives --install /usr/bin/python python /usr/bin/python3 1`
+- `python --version`
+- `exit	`
+- `sudo apt-get install python3-pip -y`
+- `sudo pip3 install awscli`
+- `sudo pip3 install boto3`
+- `sudo pip3 install boto`
+- `sudo apt-get install tree -y`
+- `sudo apt-add-repository ppa:ansible/ansible`
+- `sudo apt-get install ansible -y`
+- `cd /etc/ansible`
+- `sudo mkdir group_var`
+- `sudo mkdir group_var/all`
+- `cd group_var/all`
+- `sudo ansible-vault create pass.yml (aws_access_key: aws_secret_key:)`
+- `sudo chmod 600 pass.yml`
+- `ansible-galaxy collection install amazon.aws`
+- `ssh-keygen -t rsa -b 4096`
+
+Commands I will use to launch the ec2 creation .yml playbook files:<br>
+`sudo ansible-playbook launchapp.yml --ask-vault-pass --tags create_ec2 --tags=ec2-create -e "ansible_python_interpreter=/usr/bin/python3"`
+
+Command I will use to configure the ec2 instances with .yml playbook files:<br>
+`sudo ansible-playbook provisiondb.yml --ask-vault-pass`
+
+How the hosts file will look:
+
+```yaml
+[local]
+localhost ansible_python_interpreter=/usr/bin/python3
+
+[awsapp]
+54.154.172.13 ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/id_rsa
+
+[awsdb]
+54.220.140.176 ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/zilamo_db
+```
+
+Command I will use to ping all the servers to make sure they're running and can be accessed:<br>
+`sudo ansible awsapp,awsdb -m ping --ask-vault-pass`
