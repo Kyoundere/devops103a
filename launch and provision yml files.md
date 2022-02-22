@@ -7,10 +7,10 @@
   vars_files:
   - /etc/ansible/group_vars/all/pass.yml
   vars:
-    key_name: id_rsa
+    key_name: eng103a_zilamo_app
     region: eu-west-1
     image: ami-07d8796a2b0f8d29c
-    id: "zilamo-ansible-app"
+    id: "zilamo-cloud-ansible-app"
     sec_group: "{{ id }}-sec2"
     ansible_python_interpreter: /usr/bin/python3
   tasks:
@@ -19,13 +19,14 @@
       - name: Upload public key to AWS
         ec2_key:
           name: "{{ key_name }}"
-          key_material: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+          key_material: "{{ lookup('file', '~/.ssh/eng103a_zilamo_app.pub') }}"
           region: "{{ region }}"
           aws_access_key: "{{aws_access_key}}"
           aws_secret_key: "{{aws_secret_key}}"
       - name: Create security group
         ec2_group:
           name: "{{ sec_group }}"
+          vpc_id: vpc-0c1b307a57b01f06f
           description: "Sec group for app {{ id }}"
           region: "{{ region }}"
           aws_access_key: "{{aws_access_key}}"
@@ -41,6 +42,11 @@
                 - 80
               cidr_ip: 0.0.0.0/0
               rule_desc: allow all on http port
+            - proto: tcp
+              ports:
+                - 3000
+              cidr_ip: 0.0.0.0/0
+              rule_desc: allow all on 3000 port
         register: result_sec_group
       - name: Provision instance(s)
         ec2:
@@ -52,10 +58,12 @@
           image: "{{ image }}"
           instance_type: t2.micro
           region: "{{ region }}"
+          vpc_subnet_id: subnet-0128d81162fe6f84b
+          assign_public_ip: yes
           wait: true
           count: 1
           instance_tags:
-            Name: eng103a_zilamo_ansible3
+            Name: eng103a_zilamo_cloud_ansible_app
       tags: ['never', 'create_ec2']
 ```
 # launchdb.yml
@@ -67,10 +75,10 @@
   vars_files:
   - /etc/ansible/group_vars/all/pass.yml
   vars:
-    key_name: id_rsa
+    key_name: eng103a_zilamo_db
     region: eu-west-1
     image: ami-07d8796a2b0f8d29c
-    id: "zilamo-ansible-db"
+    id: "zilamo-ansible-vpc-db"
     sec_group: "{{ id }}-sec-db"
     ansible_python_interpreter: /usr/bin/python3
   tasks:
@@ -79,7 +87,7 @@
       - name: Upload public key to AWS
         ec2_key:
           name: "{{ key_name }}"
-          key_material: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+          key_material: "{{ lookup('file', '~/.ssh/eng103a_zilamo_db.pub') }}"
           region: "{{ region }}"
           aws_access_key: "{{aws_access_key}}"
           aws_secret_key: "{{aws_secret_key}}"
@@ -88,6 +96,7 @@
           name: "{{ sec_group }}"
           description: "Sec group for app {{ id }}"
           region: "{{ region }}"
+          vpc_id: vpc-0c1b307a57b01f06f
           aws_access_key: "{{aws_access_key}}"
           aws_secret_key: "{{aws_secret_key}}"
           rules:
@@ -112,12 +121,13 @@
           image: "{{ image }}"
           instance_type: t2.micro
           region: "{{ region }}"
+          vpc_subnet_id: subnet-0f7cec3b6ed1b5c30
+          assign_public_ip: no
           wait: true
           count: 1
           instance_tags:
-            Name: eng103a_zilamo_ansible_db
+            Name: eng103a_zilamo_cloud_ansible_db
       tags: ['never', 'create_ec2']
-  
 ```
 # provisionapp.yml
 ```yml
@@ -128,7 +138,7 @@
    tasks:
    -  name: moving app folder in
       synchronize:
-        src: /home/vagrant/app
+        src: ~/app/
         dest: ~/
    -  name: load a specific version of nodejs
       shell: curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
@@ -142,7 +152,7 @@
         update_cache: yes
    -  name: nginx configuration for reverse proxy
       synchronize:
-        src: /home/vagrant/app/default
+        src: ~/app/default
         dest: /etc/nginx/sites-available/default
    -  name: nginx restart
       service: name=nginx state=restarted
@@ -151,7 +161,7 @@
    -  name: initialise DB_HOST and seed the DB
       become_user: ubuntu
       shell:
-         cd ~/app; echo "mongodb://ipaddress:27017/posts" > mongoip; node seeds/seed.js;
+         cd ~/app; echo "mongodb://privateip:27017/posts" > mongoip; node seeds/seed.js;
    -  name: install and run the app
       become_user: ubuntu
       shell:
@@ -169,8 +179,8 @@
         name: mongodb
         state: present
         update_cache: yes
-  - name: allow 0.0.0.0
-    ansible.builtin.lineinfile:
+   - name: allow 0.0.0.0
+     ansible.builtin.lineinfile:
       path: /etc/mongodb.conf
       regexp: '^bind_ip = '
       line: bind_ip = 0.0.0.0
@@ -186,10 +196,10 @@
 localhost ansible_python_interpreter=/usr/bin/python3
 
 [awsapp]
-54.154.172.13 ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/id_rsa
+18.203.233.161 ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/eng103a_zilamo_app
 
 [awsdb]
-54.220.140.176 ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/zilamo_db
+52.215.206.137 ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/eng103a_zilamo_db
 ```
 
 

@@ -871,7 +871,7 @@ To check if the vagrant servers work and have internet access, we'll individuall
 - `sudo su`
 - `update-alternatives --install /usr/bin/python python /usr/bin/python3 1`
 - `python --version`
-- `exit	`
+- `exit`
 - `sudo apt-get install python3-pip -y`
 - `sudo pip3 install awscli`
 - `sudo pip3 install boto3`
@@ -880,13 +880,16 @@ To check if the vagrant servers work and have internet access, we'll individuall
 - `sudo apt-add-repository ppa:ansible/ansible`
 - `sudo apt-get install ansible -y`
 - `cd /etc/ansible`
-- `sudo mkdir group_var`
-- `sudo mkdir group_var/all`
-- `cd group_var/all`
+- `sudo mkdir group_vars`
+- `sudo mkdir group_vars/all`
+- `cd group_vars/all`
 - `sudo ansible-vault create pass.yml (aws_access_key: aws_secret_key:)`
 - `sudo chmod 600 pass.yml`
 - `ansible-galaxy collection install amazon.aws`
 - `ssh-keygen -t rsa -b 4096`
+
+From localhost (move app folder in):
+`scp -i "~/.ssh/eng103a_zilamo.pem" -r app/ ubuntu@34.245.175.25:~/`
 
 Commands I will use to launch the ec2 creation .yml playbook files:<br>
 `sudo ansible-playbook launchapp.yml --ask-vault-pass --tags create_ec2 --tags=ec2-create -e "ansible_python_interpreter=/usr/bin/python3"`
