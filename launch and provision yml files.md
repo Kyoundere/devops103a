@@ -53,7 +53,6 @@
           aws_access_key: "{{aws_access_key}}"
           aws_secret_key: "{{aws_secret_key}}"
           key_name: "{{ key_name }}"
-          id: "{{ id }}"
           group_id: "{{ result_sec_group.group_id }}"
           image: "{{ image }}"
           instance_type: t2.micro
@@ -116,7 +115,6 @@
           aws_access_key: "{{aws_access_key}}"
           aws_secret_key: "{{aws_secret_key}}"
           key_name: "{{ key_name }}"
-          id: "{{ id }}"
           group_id: "{{ result_sec_group.group_id }}"
           image: "{{ image }}"
           instance_type: t2.micro

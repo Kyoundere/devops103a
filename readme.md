@@ -2,6 +2,7 @@
   - [Why should we use DevOps](#why-should-we-use-devops)
     - [Benefits of DevOps](#benefits-of-devops)
     - [Monolith, 2 tier & Microservices Architectures](#monolith-2-tier--microservices-architectures)
+- [Installing Python](#installing-python)
 - [Vagrant](#vagrant)
   - [Pre-Requisites](#pre-requisites)
 - [Install Ruby](#install-ruby)
@@ -23,8 +24,6 @@
   - [Setting Up Auto Scaling + Load Balancer](#setting-up-auto-scaling--load-balancer)
 - [CI/CD](#cicd)
   - [Creating an SSH Connection](#creating-an-ssh-connection)
-- [CI/CD](#cicd-1)
-- [Creating an SSH Connection](#creating-an-ssh-connection-1)
   - [Jenkins](#jenkins)
   - [Continuous Integration](#continuous-integration)
   - [Continuous Delivery](#continuous-delivery)
@@ -35,11 +34,13 @@
   - [Benefits of Ansible](#benefits-of-ansible)
   - [What is IaC](#what-is-iac)
   - [Checking Vagrant Instances](#checking-vagrant-instances)
-  - [Installing Ansible](#installing-ansible)
+  - [Installing Ansible with Linux](#installing-ansible-with-linux)
+  - [Installing Ansible on Windows](#installing-ansible-on-windows)
   - [Ansible Playbooks](#ansible-playbooks)
     - [Creating a playbook:](#creating-a-playbook)
     - [Next, we will make a yml file to move the app folder into the web server, install all the dependencies required and then install and run the application:](#next-we-will-make-a-yml-file-to-move-the-app-folder-into-the-web-server-install-all-the-dependencies-required-and-then-install-and-run-the-application)
-  - [Migrating Ansible to Cloud](#migrating-ansible-to-cloud)
+  - [Migrating Ansible to Cloud (Python))](#migrating-ansible-to-cloud-python)
+  - [Installing Terraform](#installing-terraform)
 
 # What is DevOps
 ## Why should we use DevOps
@@ -59,6 +60,14 @@ Monolith (One box that has the front end, back end, database) (Everytime you add
 
 Microservices (Separating it into even smaller things for improved uptime, and easier updating
 
+# Installing Python
+- `sudo add-apt-repository ppa:deadsnakes/ppa -y`
+- `sudo apt install python3.10 -y`
+- `sudo su`
+- `update-alternatives --install /usr/bin/python python /usr/bin/python3 1`
+- `python --version`
+- `exit`
+- `sudo apt-get install python3-pip -y`
 # Vagrant
 
 ## Pre-Requisites
@@ -515,48 +524,7 @@ Could you explain CI/CD?:
     - `git branch -M main`
     - `git remote add origin SSHGITCLONELINKHERE`
     - `git push -u origin main`
-
-# CI/CD
-
-Could you explain CI/CD?:
-- Continuous Integration is partly a culture that involves frequent code commits and updates, rather than occasional large commits. 
-- On top of that, the push should automatically integrate the data from localhost onto github and straight onto the AWS instance without your own manual interaction with the instances. 
-- CD stands for either continuous delivery or continuous deployment, depending on how the user wants to approach their pipeline. 
-- These both involve automation of further stages of the pipeline. 
-- Continuous delivery means that the changes that are uploaded to the repository via continuous integration are automatically bug tested (such as via Jenkins) and then uploaded on the final instance, such as in AWS storage, where the operations team can manually deploy the changes to live. 
-- Continuous deployment is the same as continuous delivery, except it's automatically uploaded to the live instance rather than letting the operations team manually handle it, effectively automating the final step that continuous delivery leaves to the operations team.
-
-![cicd](cicd.png)
-<br><br>
-# Creating an SSH Connection
-
-1. Generate SSH key-pair on localhost.
-2. Put the lock onto GitHub, copying the public SSH key onto GitHub.
-3. Create a new repo for CICD on our GitHub.
-4. Use your ssh key to push changes locally into the SSH key-protected repository.
-
-- file.pub - key to get into github account using secure shell
-1. 
-    - `ssh-keygen -t rsa -b 4096 -C "your_email@example.com"`
-    - Generates SSH key-pair.
-    - Enter file in which to save key without writing anything.
-    - Enter passphrase (empty if none).
-    - Generates .pub file which is the key.
-2. 
-    - Go onto your GitHub settings, SSH keys and copy and paste the entire key. 
-    - You can list the contents of the key by using the '`cat`' command.
-3. 
-    - Go to your main GitHub page.
-    - Click 'repositories'.
-    - Create a new public repository, name it something related to CI/CD.
-4. 
-    - `git init`
-    - `git add .`
-    - `git commit -m "first commit"`
-    - `git branch -M main`
-    - `git remote add origin SSHGITCLONELINKHERE`
-    - `git push -u origin main`
-
+  
 ## Jenkins
 
 - Jenkins default port is 8080
@@ -744,12 +712,12 @@ overall
 
 To check if the vagrant servers work and have internet access, we'll individually SSH into them with `vagrant ssh instancename` and perform the `sudo apt-get update -y && sudo apt-get upgrade -y` command on each one (web, db, controller).<br>
 
-## Installing Ansible
+## Installing Ansible with Linux
 
 - To install ansible, first let's ssh into the ansible instance: `vagrant ssh controller`<br>
 - Now we will perform the pre-requisites to installing ansible<br>
-- `sudo apt-get install software-properties-common`
-- `sudo apt-add-repository ppa:ansible/ansible`
+- `sudo apt-get install software-properties-common -y`
+- `sudo apt-add-repository ppa:ansible/ansible -y`
 - Now we can install ansible
 - `sudo apt-get install ansible -y`
 - To check if ansible is successfully installed
@@ -786,7 +754,22 @@ To check if the vagrant servers work and have internet access, we'll individuall
 - `ansible all -a "ls"`
 - Which should list the local storage of each connected node
 
+## Installing Ansible on Windows
 
+- Ansible does not support Windows. However, Windows has a feature called WLS
+- WLS stands for Windows Linux Subsystem - It replicates a linux environment within windows and allows you to use many linux tools
+- To turn on WLS, go into your windows search bar, and search 'Turn Windows features on or off', and press enter.
+- From there on, scroll down until you see "Windows Linux Subsystem" and tick that checkbox.
+- Next, launch the microsoft store (from the search bar) and search 'Ubuntu' within the store. It should be free - click on 'Get' to install the latest version.
+  - If you do not have microsoft store enabled, Ubuntu can be installed via PowerShell instead. Enter the following commands sequentially to install Ubuntu on WLS:
+
+    ````
+    cd c:\
+    Invoke-WebRequest -Uri https://aka.ms/wslubuntu2004 -OutFile Ubuntu.appx -UseBasicParsing
+    Add-AppxPackage Ubuntu.appx
+    ````
+    And then use windows search to search 'Ubuntu'. Run the Ubuntu app you find on windows search, and follow the instructions on screen. Then, follow the instructions to install ansible on Linux above.
+    
 ## Ansible Playbooks
 - Playbooks save time
 - They are YAML/YAML files that are used to implement configuration management
@@ -858,7 +841,7 @@ To check if the vagrant servers work and have internet access, we'll individuall
          cd app; npm install; screen -d -m npm start
 ```
 
-## Migrating Ansible to Cloud
+## Migrating Ansible to Cloud (Python))
 
 - To migrate ansible onto cloud, we need to create a .yml file that is able to launch new ec2 instances
 - Also needs SSH permission and secret-key + access-key to gain access to AWS
@@ -867,7 +850,7 @@ To check if the vagrant servers work and have internet access, we'll individuall
 - `sudo apt-get update -y && sudo apt-get upgrade -y`
 - `sudo apt install software-properties-common -y`
 - `sudo add-apt-repository ppa:deadsnakes/ppa`
-- `sudo apt install python3.9 -y`
+- `sudo apt install python3.10 -y`
 - `sudo su`
 - `update-alternatives --install /usr/bin/python python /usr/bin/python3 1`
 - `python --version`
@@ -876,20 +859,29 @@ To check if the vagrant servers work and have internet access, we'll individuall
 - `sudo pip3 install awscli`
 - `sudo pip3 install boto3`
 - `sudo pip3 install boto`
-- `sudo apt-get install tree -y`
 - `sudo apt-add-repository ppa:ansible/ansible`
 - `sudo apt-get install ansible -y`
 - `cd /etc/ansible`
 - `sudo mkdir group_vars`
 - `sudo mkdir group_vars/all`
 - `cd group_vars/all`
+- `sudo apt-get update -y`
+- `sudo apt install openjdk-8-jre -y`
+- `wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo apt-key add -`
+- `sudo sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'`
+- `sudo apt-get update -y`
+- `sudo apt-get install jenkins -y`
+- `sudo systemctl start jenkins`
+- Go to the site (port 8080)
+- `sudo cat /var/lib/jenkins/secrets/initialAdminPassword`
 - `sudo ansible-vault create pass.yml (aws_access_key: aws_secret_key:)`
-- `sudo chmod 600 pass.yml`
-- `ansible-galaxy collection install amazon.aws`
+- `sudo chown jenkins:jenkins pass.yml`
+- `sudo ansible-galaxy collection install amazon.aws`
 - `ssh-keygen -t rsa -b 4096`
 
 From localhost (move app folder in):
 `scp -i "~/.ssh/eng103a_zilamo.pem" -r app/ ubuntu@34.245.175.25:~/`
+`scp -i "~/.ssh/keyname.pem" -r app/ ubuntu@ipaddress:~`
 
 Commands I will use to launch the ec2 creation .yml playbook files:<br>
 `sudo ansible-playbook launchapp.yml --ask-vault-pass --tags create_ec2 --tags=ec2-create -e "ansible_python_interpreter=/usr/bin/python3"`
@@ -912,3 +904,33 @@ localhost ansible_python_interpreter=/usr/bin/python3
 
 Command I will use to ping all the servers to make sure they're running and can be accessed:<br>
 `sudo ansible awsapp,awsdb -m ping --ask-vault-pass`
+
+## Installing Terraform
+
+First we install choco: <br>
+- Launch powershell with administrator rights:
+`Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))`
+
+Next we install terraform: <br>
+`choco install terraform` <br>
+Next, we restart the powershell instance to refresh the environment variables. We can use Terraform now.
+
+
+installing docker (hyperv backend): https://docs.docker.com/desktop/windows/install/#wsl-2-backend
+
+`docker run hello-world`
+`docker login` <-- won't work, "non tty device"
+`winpty docker login`
+`docker run -p 2368:2368 ghost`
+if port is in exclusion range: `net stop winnat`
+To run in detached mode:
+`docker run -d -p 2368:2368 ghost`
+`docker ps`
+`docker stop containerid`
+`docker start containerid`
+`docker rm containerid -f`
+`docker run -d -p 80:80 nginx`
+`docker rm nginx -f`
+`docker run -d -p 80:2368 ghost`
+`docker run -d -p 4000:4000 docs/docker.github.io`
+Port mapping: left port is the one the container is mapped to on the server, right port is the 
